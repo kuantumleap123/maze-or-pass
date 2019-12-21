@@ -1,0 +1,163 @@
+<h1>Maze or pass</h1>
+<h3>
+    Score: <div id="score">0</div>
+    Time: <div id="time">0</div>
+</h3>
+
+<canvas height="250" width="250" id="mazeCanvas" style="border:1px solid black;" onclick="startMaze()">
+not working?
+</canvas>
+
+<br>
+Click grid to start
+<br><br>
+
+<input type="number" min="5" max="20" id="size"><button onclick="resetGrid()" id="grid-change">Change grid size</button>
+
+
+<button onclick="stopMaze()" id="stop-btn" disabled>stop</button>
+
+<script src="maze.js"></script>
+
+<script>
+var canvas = document.getElementById("mazeCanvas");
+var ctx = canvas.getContext("2d");
+var mazeSize = 10;
+var isStart = false;
+var maze = new Maze(mazeSize);
+var stepCount = 0;
+var score = 0;
+var timeLeft = 0;   // in seconds
+var interval;
+drawGridLines(mazeSize);
+
+document.addEventListener('keydown',detectKeys);
+
+function detectKeys(e)
+{
+    //console.log(e);
+    if(isStart)
+    {
+        let key = e.key;
+        switch(key)
+        {            
+            case 'w':
+                maze.moveUp();
+                stepCount++;
+                break;
+            case 's':
+                maze.moveDown();
+                stepCount++;
+                break;
+            case 'a':
+                maze.moveLeft();
+                stepCount++;
+                break;
+            case 'd':
+                maze.moveRight();
+                stepCount++;
+                break;            
+        }
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        resetGrid();
+        let reachGoal = maze.hasReachedGoal();
+        if(reachGoal)
+        {
+            score += 100;
+            
+        }
+        if(reachGoal || key == 'q')
+        {
+            maze = new Maze(mazeSize);
+            stepCount = 0;
+        }
+        
+        drawMaze();        
+        document.getElementById('score').innerHTML = score;
+        
+    }
+    
+}
+
+function drawGridLines(size)
+{
+    
+    for(let i=1;i<size;i++)
+    {
+        ctx.moveTo(25*i,0);
+        ctx.lineTo(25*i,25*size);
+        ctx.stroke();
+
+        ctx.moveTo(0,25*i);
+        ctx.lineTo(25*size,25*i);
+        ctx.stroke();
+    }
+    
+}
+
+function resetGrid() // get new size, change canvas size, draw gridlines
+{
+    mazeSize = document.getElementById('size').value >= 5 ? document.getElementById('size').value : mazeSize;
+    
+    canvas.height = 25*mazeSize;
+    canvas.width = 25*mazeSize;
+    drawGridLines(mazeSize)
+}
+
+function startMaze()
+{    
+    resetGrid();
+    maze = new Maze(mazeSize);
+    drawMaze();
+    //document.getElementById('start-btn').disabled = true;
+    document.getElementById('stop-btn').disabled = false;
+    isStart = true;
+    score = 0;
+    document.getElementById('score').innerHTML = score;
+    startTimer(60);
+}
+
+function stopMaze()
+{    
+    
+    resetGrid();
+    document.getElementById('stop-btn').disabled = true;
+    //document.getElementById('start-btn').disabled = false;
+    isStart = false;
+    
+}
+
+function drawMaze() // draws the X,P,G
+{
+    for(let i=0;i<maze.size;i++)
+    {
+        for(let j=0;j<maze.size;j++)
+        {
+            if(maze.grid[i][j] != '')
+            {
+                ctx.font = "10px Arial";
+                ctx.strokeText(maze.grid[i][j], 25*j+10, 25*i+15); 
+            }
+        }
+    }
+}
+
+function startTimer(duration)
+{
+    timeLeft = duration;
+    inter = setInterval(() => {
+        //let str = `${String(Math.floor(timeLeft/60)).padStart(2,'0')}:${String(timeLeft%60).padStart(2,'0')}`;
+        //console.clear();        
+        //console.log(str);
+
+        if(timeLeft <= 0)
+        {            
+            clearInterval(inter);
+            stopMaze();
+        }
+        timeLeft -= 1;
+        document.getElementById('time').innerHTML = timeLeft;
+    },1000);
+}
+
+</script>

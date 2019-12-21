@@ -4,10 +4,11 @@ class Maze
     {
         this.size = size;
         this.start = [];
+        this.current = [];
         this.goal = [];
         this.grid = this.createMaze(size);
         this.solution = [];
-        this.shortest_sol = [];
+        this.shortest_sol = this.Dijkstra();
     }
 
     createMaze(size)
@@ -31,6 +32,7 @@ class Maze
         let pCol = Math.floor(size*Math.random());
         mazeGrid[pRow][pCol] = 'P';
         this.start = [pRow,pCol];
+        this.current = [pRow,pCol];
 
         let gRow = Math.floor(size*Math.random());
         let gCol = Math.floor(size*Math.random());
@@ -351,6 +353,63 @@ class Maze
 
             return shortest_sol;
         }
+    }
+
+    moveUp()
+    {
+        if(this.current[0]-1 >= 0 && this.grid[this.current[0]-1][this.current[1]] != 'X')
+        {
+            this.grid[this.current[0]][this.current[1]] = '';
+            this.grid[this.current[0]-1][this.current[1]] = 'P';
+            this.current[0]--;
+            return true;
+        }
+
+        return false;
+    }
+
+    moveDown()
+    {
+        if(this.current[0]+1 < this.size && this.grid[this.current[0]+1][this.current[1]] != 'X')
+        {
+            this.grid[this.current[0]][this.current[1]] = '';
+            this.grid[this.current[0]+1][this.current[1]] = 'P';
+            this.current[0]++;
+            return true;
+        }
+
+        return false;
+    }
+
+    moveLeft()
+    {
+        if(this.current[1]-1 >= 0 && this.grid[this.current[0]][this.current[1]-1] != 'X')
+        {
+            this.grid[this.current[0]][this.current[1]] = '';
+            this.grid[this.current[0]][this.current[1]-1] = 'P';
+            this.current[1]--;
+            return true;
+        }
+        
+        return false;
+    }
+
+    moveRight()
+    {
+        if(this.current[1]+1 < this.size && this.grid[this.current[0]][this.current[1]+1] != 'X')
+        {
+            this.grid[this.current[0]][this.current[1]] = '';
+            this.grid[this.current[0]][this.current[1]+1] = 'P';
+            this.current[1]++;
+            return true;
+        }
+
+        return false;
+    }
+
+    hasReachedGoal()
+    {
+        return this.current[0] == this.goal[0] && this.current[1] == this.goal[1];
     }
 }
 
