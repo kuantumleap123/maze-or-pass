@@ -119,7 +119,7 @@ function startMaze()
 
 function stopMaze()
 {    
-    
+    clearInterval(inter);
     resetGrid();
     document.getElementById('stop-btn').disabled = true;
     //document.getElementById('start-btn').disabled = false;
@@ -152,7 +152,7 @@ function startTimer(duration)
 
         if(timeLeft <= 0)
         {            
-            clearInterval(inter);
+            
             stopMaze();
         }
         timeLeft -= 1;
