@@ -63,10 +63,11 @@ function detectKeys(e)
         let reachGoal = maze.hasReachedGoal();
         if(reachGoal)
         {
-            score += 100;
+            let shortest = maze.Dijkstra().length;
+            score += stepCount==shortest ? 100 : Math.max(0,100 - 10*(stepCount-shortest));
             
         }
-        if(reachGoal || key == 'q')
+        if(reachGoal || key == 'q' || key == 'e')
         {
             maze = new Maze(mazeSize);
             stepCount = 0;
@@ -109,7 +110,7 @@ function startMaze()
     resetGrid();
     maze = new Maze(mazeSize);
     drawMaze();
-    //document.getElementById('start-btn').disabled = true;
+    document.getElementById('grid-change').disabled = true;
     document.getElementById('stop-btn').disabled = false;
     isStart = true;
     score = 0;
@@ -122,7 +123,7 @@ function stopMaze()
     clearInterval(inter);
     resetGrid();
     document.getElementById('stop-btn').disabled = true;
-    //document.getElementById('start-btn').disabled = false;
+    document.getElementById('grid-change').disabled = false;
     isStart = false;
     
 }
@@ -149,14 +150,15 @@ function startTimer(duration)
         //let str = `${String(Math.floor(timeLeft/60)).padStart(2,'0')}:${String(timeLeft%60).padStart(2,'0')}`;
         //console.clear();        
         //console.log(str);
+        timeLeft -= 1;
+        document.getElementById('time').innerHTML = timeLeft;
 
         if(timeLeft <= 0)
         {            
             
             stopMaze();
         }
-        timeLeft -= 1;
-        document.getElementById('time').innerHTML = timeLeft;
+        
     },1000);
 }
 
